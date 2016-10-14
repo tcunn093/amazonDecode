@@ -22,7 +22,7 @@ var handlers = {
         this.emit(':tell', 'tonight');
     },
     'AMAZON.HelpIntent': function () {
-		    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
+		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
@@ -33,7 +33,7 @@ var handlers = {
         this.emit(':tell', 'Goodbye!');
     },
     'ListEvents': function (events, count) {
-        events = JSON.parse(events)['events'];
+        var events = JSON.parse(events)['events'];
         var speechOutput = 'The top ' + count + ' events are: ';
 
         for (var i = 0; i < count; i++) {
