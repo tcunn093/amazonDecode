@@ -17,14 +17,7 @@ var handlers = {
     'LaunchRequest': function () {
         this.emit('GetEventsToday');
     },
-    'GetEventsToday': function (){
-        //$.get("https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3").then(function(res){
-            initializeRequest();
-			
-        });
-
-        this.emit(':tell', 'today');
-    },
+    'GetEventsToday': initializeRequest,
     'GetEventsTonight': function (){
         this.emit(':tell', 'Getting DOWN tonight! YEAH...');
     },
@@ -64,8 +57,6 @@ var listEvents = function (data, count) {
     }
     this.emit(':tell', speechOutput);
 }
-
-
 
 function initializeRequest() {  
 		//alert('before get');
