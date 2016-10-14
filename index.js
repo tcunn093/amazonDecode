@@ -21,6 +21,9 @@ var handlers = {
     'GetEventsTonight': function (){
         this.emit(':tell', 'tonight');
     },
+	'GetEventsFuture': function() {
+		this.emit(':tell', 'future');
+	},
     'AMAZON.HelpIntent': function () {
 		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
