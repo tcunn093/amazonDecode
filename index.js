@@ -34,8 +34,11 @@ var handlers = {
     'LaunchRequest': function () {
         this.emit('GetFact');
     },
-    'GetEventsToday': function (){
+    'GetEventsToday': function () {
         this.emit(':tell', 'test');
+    },
+    'GetEventsTonight': function () {
+        this.emit(':tell', 'Testing tonight');
     },
     'GetNewFactIntent': function () {
         this.emit('GetFact');
