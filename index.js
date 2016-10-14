@@ -1,10 +1,14 @@
 'use strict';
 var Alexa = require('alexa-sdk');
 
+var req = require('request');
+
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
 
-var response = new XMLHttpRequest();
+function buildEventsUrl(keyword){
+    return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword + "&sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
+}
 
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
@@ -17,7 +21,13 @@ var handlers = {
     'LaunchRequest': function () {
         this.emit('GetEventsToday');
     },
-    'GetEventsToday': initializeRequest,
+    'GetEventsToday': function(){
+        request(buildEventsUrl(''), function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                listEvents(JSON.parse(response.responseText), 3); // Show the HTML for the Google homepage.
+            }
+        });
+    },
     'GetEventsTonight': function (){
         this.emit(':tell', 'Getting DOWN tonight! YEAH...');
     },
@@ -58,31 +68,3 @@ var listEvents = function (data, count) {
     this.emit(':tell', speechOutput);
 }
 
-function initializeRequest() {  
-		//alert('before get');
-		if (response.readyState == 4 || response.readyState == 0) {
-				response.open("GET", 'https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3', true);
-				response.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-				response.onreadystatechange = handleOutput;
-				var param = "";
-				response.send(param);
-				//alert(response);
-		}                       
-}
-
-
-function handleOutput() {		
-		if (response.readyState == 4) {
-			listEvents(JSON.parse(response.responseText), 3);
-				/*var xmldoc = response.responseText;			
-				
-				var jsonData = JSON.parse(xmldoc);
-				console.log(jsonData.events.length);
-
-				for (var i = 0; i < jsonData.events.length; i++) {
-					var counter = jsonData.events[i];
-					console.log(counter.name.text);
-				}*/
-				
-		}
-}
