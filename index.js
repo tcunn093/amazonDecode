@@ -65,13 +65,13 @@ var handlers = {
         this.emit(':tell', 'Goodbye!');
     },
     'ListEvents': function (events, count) {
-      events = JSON.parse(events)['events'];
-      var speechOutput = 'The top ' + count + ' events are: ';
+        events = JSON.parse(events)['events'];
+        var speechOutput = 'The top ' + count + ' events are: ';
 
-      for (var i = 0; i < count; i++) {
-        speechOutput = speechOutput + events[i]['name'];
-      }
+        for (var i = 0; i < count; i++) {
+          speechOutput = speechOutput + events[i]['name'];
+        }
 
-      this.emit(':tell', speechOutput);
+        this.emit(':tell', speechOutput);
     },
 };
