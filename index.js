@@ -37,6 +37,9 @@ var handlers = {
     'GetEventsToday': function (){
         this.emit(':tell', 'test');
     },
+    'GetEventsTonight': function (){
+        this.emit(':tell', 'test');
+    },
     'GetNewFactIntent': function () {
         this.emit('GetFact');
     },
