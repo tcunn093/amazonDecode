@@ -4,6 +4,8 @@ var Alexa = require('alexa-sdk');
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
 
+var response = new XMLHttpRequest();
+
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
@@ -16,8 +18,9 @@ var handlers = {
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function (){
-        $.get("https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3").then(function(res){
-            listEvents(res, 3);
+        //$.get("https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3").then(function(res){
+            initializeRequest();
+			
         });
 
         this.emit(':tell', 'today');
@@ -60,4 +63,35 @@ var listEvents = function (data, count) {
       speechOutput = speechOutput + events[i]['name']['text'];
     }
     this.emit(':tell', speechOutput);
+}
+
+
+
+function initializeRequest() {  
+		//alert('before get');
+		if (response.readyState == 4 || response.readyState == 0) {
+				response.open("GET", 'https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3', true);
+				response.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+				response.onreadystatechange = handleOutput;
+				var param = "";
+				response.send(param);
+				//alert(response);
+		}                       
+}
+
+
+function handleOutput() {		
+		if (response.readyState == 4) {
+			listEvents(JSON.parse(response.responseText), 3);
+				/*var xmldoc = response.responseText;			
+				
+				var jsonData = JSON.parse(xmldoc);
+				console.log(jsonData.events.length);
+
+				for (var i = 0; i < jsonData.events.length; i++) {
+					var counter = jsonData.events[i];
+					console.log(counter.name.text);
+				}*/
+				
+		}
 }
