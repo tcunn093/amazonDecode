@@ -34,10 +34,11 @@ var handlers = {
     },
     'ListEvents': function (events, count) {
         events = JSON.parse(events)['events'];
-        var speechOutput = 'The top ' + count + ' events are: ';
+        count = Math.min(count, events);
 
+        var speechOutput = 'The top ' + count + ' events are: ';
         for (var i = 0; i < count; i++) {
-          speechOutput = speechOutput + events[i]['name'];
+          speechOutput = speechOutput + events[i]['name']['text'];
         }
 
         this.emit(':tell', speechOutput);
