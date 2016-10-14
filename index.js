@@ -1,7 +1,7 @@
 'use strict';
 var Alexa = require('alexa-sdk');
 
-var APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
+var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
 
 /**
