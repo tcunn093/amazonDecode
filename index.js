@@ -22,7 +22,7 @@ var handlers = {
         this.emit(':tell', 'tonight');
     },
     'AMAZON.HelpIntent': function () {
-		    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
+		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
