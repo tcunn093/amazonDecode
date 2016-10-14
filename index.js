@@ -31,16 +31,18 @@ var handlers = {
     },
     'AMAZON.StopIntent': function () {
         this.emit(':tell', 'Goodbye!');
-    },
-    'ListEvents': function (events, count) {
-        events = JSON.parse(events)['events'];
-        count = Math.min(count, events);
+    }
 
-        var speechOutput = 'The top ' + count + ' events are: ';
-        for (var i = 0; i < count; i++) {
-          speechOutput = speechOutput + events[i]['name']['text'];
-        }
-
-        this.emit(':tell', speechOutput);
-    },
 };
+
+var listEvents = function (events, count) {
+    var events = JSON.parse(events)['events'];
+    var count = Math.min(count, events);
+
+    var speechOutput = 'The top ' + count + ' events are: ';
+    for (var i = 0; i < count; i++) {
+      speechOutput = speechOutput + events[i]['name']['text'];
+    }
+
+    this.emit(':tell', speechOutput);
+}
