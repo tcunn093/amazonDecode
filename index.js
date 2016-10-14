@@ -6,10 +6,6 @@ var request = require('request');
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
 
-function buildEventsUrl(keyword){
-    return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword + "&sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
-}
-
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
@@ -18,15 +14,35 @@ exports.handler = function(event, context, callback) {
 };
 
 var handlers = {
-    'LaunchRequest': function () {
+    'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function(){
-        request(buildEventsUrl(''), function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                listEvents(JSON.parse(response.responseText), 3); // Show the HTML for the Google homepage.
+
+        var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
+
+        request(url, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (response.statusCode == 200) {
+                this.emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
+            } else{
+                console.log(response.statusCode);
             }
+          }
         });
+
+
+    },
+    'ListEvents': function (data, count) {
+        var events = data.events;
+        var count = Math.min(count, events.length);
+        var speechOutput = 'The top ' + count + ' events are: ';
+
+        for (var i = 0; i < count; i++) {
+          speechOutput = speechOutput + events[i]['name']['text'];
+        }
+        console.log(speechOutput);
+        this.emit(':tell', speechOutput);
     },
     'GetEventsTonight': function (){
         this.emit(':tell', 'Getting DOWN tonight! YEAH...');
@@ -57,14 +73,3 @@ var handlers = {
     }
 
 };
-
-var listEvents = function (data, count) {
-    var events = data.events;
-    var count = Math.min(count, events.length);
-    var speechOutput = 'The top ' + count + ' events are: ';
-    for (var i = 0; i < count; i++) {
-      speechOutput = speechOutput + events[i]['name']['text'];
-    }
-    this.emit(':tell', speechOutput);
-}
-
