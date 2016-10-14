@@ -35,10 +35,10 @@ var handlers = {
         this.emit('GetFact');
     },
     'GetEventsToday': function (){
-        this.emit(':tell', 'test');
+        this.emit(':tell', 'today');
     },
     'GetEventsTonight': function (){
-        this.emit(':tell', 'test');
+        this.emit(':tell', 'tonight');
     },
     'GetNewFactIntent': function () {
         this.emit('GetFact');
