@@ -36,7 +36,7 @@ var handlers = {
 		// use either for converting
 		var date = d.toISOString();
 		date = intent.slots.Date;
-		this.emit(':tell', 'date');
+		this.emit(':tell', date);
 	},
 	'GetEventsByKeyword': function(intent, session, response) {
 		$.get("https://www.eventbriteapi.com/v3/events/search/?q=" + intent.slots.Keyword + "&sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3").then(function(res){
