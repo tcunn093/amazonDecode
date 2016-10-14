@@ -32,6 +32,12 @@ var handlers = {
 		date = intent.slots.Date;
 		this.emit(':tell', 'date');
 	},
+	'GetEventsByKeyword': function(intent, session, response) {
+		$.get("https://www.eventbriteapi.com/v3/events/search/?q=" + intent.slots.Keyword + "&sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3").then(function(res){
+            listEvents(res, 3);
+        });	
+		this.emit(':tell', intent.slots.Keyword);
+	},
     'AMAZON.HelpIntent': function () {
 		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
