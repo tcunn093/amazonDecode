@@ -23,10 +23,14 @@ var handlers = {
         this.emit(':tell', 'today');
     },
     'GetEventsTonight': function (){
-        this.emit(':tell', 'tonight');
+        this.emit(':tell', 'Getting DOWN tonight! YEAH...');
     },
-	'GetEventsFuture': function() {
-		this.emit(':tell', 'future');
+	'GetEventsFuture': function(intent, session, response) {
+		var d = new Date();
+		// use either for converting
+		var date = d.toISOString();
+		date = intent.slots.Date;
+		this.emit(':tell', 'date');
 	},
     'AMAZON.HelpIntent': function () {
 		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
