@@ -16,6 +16,10 @@ var handlers = {
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function (){
+        $.get("https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3").then(function(res){
+            listEvents(res, 3);
+        });
+
         this.emit(':tell', 'today');
     },
     'GetEventsTonight': function (){
@@ -35,14 +39,12 @@ var handlers = {
 
 };
 
-var listEvents = function (events, count) {
-    var events = JSON.parse(events)['events'];
-    var count = Math.min(count, events);
-
+var listEvents = function (data, count) {
+    var events = data.events;
+    var count = Math.min(count, events.length);
     var speechOutput = 'The top ' + count + ' events are: ';
     for (var i = 0; i < count; i++) {
       speechOutput = speechOutput + events[i]['name']['text'];
     }
-
     this.emit(':tell', speechOutput);
 }
