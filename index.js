@@ -1,5 +1,6 @@
 'use strict';
 var Alexa = require('alexa-sdk');
+var $ = require('jquery');
 
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
