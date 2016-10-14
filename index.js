@@ -14,7 +14,22 @@ exports.handler = function(event, context, callback) {
 };
 
 var handlers = {
-    'LaunchRequest': function(){
+    'LaunchRequest': function(intent, session, callback){
+		// routing based on intents
+		// change the LaunchRequest header to be (intent, session, callback) => {}
+		var d = intent.slots.Data;
+		if (d == null) {
+			d = new Date().toISOString();
+		}
+
+		var loc = intent.slots.Location;
+		if (loc == null) {
+			loc = "Ottawa";
+		}
+
+		var q = intent.slots.Keyword;
+		// send http reques with d, loc, and q
+
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function(){
@@ -39,10 +54,21 @@ var handlers = {
 
         this.emit(':tell', speechOutput);
     },
-    'GetEventsTonight': function (){
-        this.emit(':tell', 'Getting DOWN tonight! YEAH...');
+    'GetEventsTonight': function() {
+    	var tonightStartTime;
+    	var tonightEndTime;
+    
+        [tonightStartTime,tonightEndTime] = tonightDateLimitsIsoString();
+        
+        var url = buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
+        
+		request(url, function (error, response, body)) {
+			if (!error && response.statusCode == 200) {
+                emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
+          	}
+		});
     },
-	'GetEventsFuture': function(intent, session, response) {
+	'GetEventsFuture': function(intent, session, callback) {
 		var date = intent.slots.Date;
 		this.emit(':tell', date);
 	},
