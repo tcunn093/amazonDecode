@@ -34,11 +34,11 @@ var handlers = {
     'LaunchRequest': function () {
         this.emit('GetFact');
     },
-    'GetEventsToday': function () {
-        this.emit(':tell', 'test');
+    'GetEventsToday': function (){
+        this.emit(':tell', 'today');
     },
     'GetEventsTonight': function (){
-        this.emit(':tell', 'test');
+        this.emit(':tell', 'tonight');
     },
     'GetNewFactIntent': function () {
         this.emit('GetFact');
@@ -54,7 +54,7 @@ var handlers = {
         this.emit(':tellWithCard', speechOutput, SKILL_NAME, randomFact)
     },
     'AMAZON.HelpIntent': function () {
-        var speechOutput = "You can say tell me a space fact, or, you can say exit... What can I help you with?";
+		var speechOutput = "You can say what's happening today, or tonight, or you can say exit... What can I help you with?";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
