@@ -23,7 +23,7 @@ var handlers = {
         this.emit(':tell', 'today');
     },
     'GetEventsTonight': function (){
-        this.emit(':tell', 'tonight');
+        this.emit(':tell', 'Getting DOWN tonight! YEAH...');
     },
 	'GetEventsFuture': function() {
 		this.emit(':tell', 'future');
