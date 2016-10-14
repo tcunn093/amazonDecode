@@ -39,8 +39,19 @@ var handlers = {
 
         this.emit(':tell', speechOutput);
     },
-    'GetEventsTonight': function (){
-        this.emit(':tell', 'Getting DOWN tonight! YEAH...');
+    'GetEventsTonight': function() {
+    	var tonightStartTime;
+    	var tonightEndTime;
+    
+        [tonightStartTime,tonightEndTime] = tonightDateLimitsIsoString();
+        
+        var url = buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
+        
+		request(url, function (error, response, body)) {
+			if (!error && response.statusCode == 200) {
+                emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
+          	}
+		});
     },
 	'GetEventsFuture': function(intent, session, response) {
 		var date = intent.slots.Date;
