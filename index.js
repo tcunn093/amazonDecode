@@ -40,9 +40,6 @@ var handlers = {
     'GetNewFactIntent': function () {
         this.emit('GetFact');
     },
-    'GetEventsToday': function(){
-        this.emit(':tell', 'test');
-    }
     'GetFact': function () {
         // Get a random space fact from the space facts list
         var factIndex = Math.floor(Math.random() * FACTS.length);
