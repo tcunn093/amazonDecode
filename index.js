@@ -51,7 +51,7 @@ function listEvents (data, count) {
 
 function urlBuilder (keyword, date, location) {
   //TODO implement this!
-  return 'URL';
+  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
 }
 
 
@@ -91,8 +91,7 @@ var handlers = {
 	}
 
 	//var builtURL = url[keyword][date][location]();
-	var builtURL = "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
-	
+	var builtURL = urlBuilder(keyword, date, location);
 	var ref = this;
 	request(builtURL, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
