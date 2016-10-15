@@ -84,26 +84,29 @@ var handlers = {
       var date = slots(this).Date.value;
       var location = slots(this).Location.value;
 
-	if (location  == null) {
-		location = "Ottawa";
-	}
-	if (date == null) {
-		date = "today";
-	}
+    	if (location  == null) { 
+    		location = "Ottawa";
+    	}
+    	if (date == null) {
+    		date = "today";
+    	}
+      if(keyword == null){
+        keyword = "";
+      }
 
-	//var builtURL = url[keyword][date][location]();
-	var builtURL = urlBuilder(keyword, date, location);
-	var ref = this;
-	request(builtURL, function (error, response, body) {
-		if (!error && response.statusCode == 200) {
-			if (response.statusCode == 200) {
-				var speech = listEvents(JSON.parse(body), 3);
-				ref.emit(':tell', speech);
-			} else{
-				console.log(response.statusCode);
-			}
-		}
-	});
+    	//var builtURL = url[keyword][date][location]();
+    	var builtURL = urlBuilder(keyword, date, location);
+    	var ref = this;
+    	request(builtURL, function (error, response, body) {
+    		if (!error && response.statusCode == 200) {
+    			if (response.statusCode == 200) {
+    				var speech = listEvents(JSON.parse(body), 3);
+    				ref.emit(':tell', speech);
+    			} else{
+    				console.log(response.statusCode);
+    			}
+    		}
+    	});
 
 	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
 	//this.emit(':tell', speech);
