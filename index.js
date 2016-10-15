@@ -57,6 +57,18 @@ function listEvents (data, count) {
     return speechOutput;
 }
 
+function listEventsNews (data, count) {
+    var speechOutput = 'The top ' + count + ' news headlines are: ';
+	
+	speechOutput = speechOutput + data.articles[0].title + ', ';
+	speechOutput = speechOutput + data.articles[1].title + ' and ';
+	speechOutput = speechOutput + data.articles[2].title;
+
+    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
+    console.log(speechOutput);
+    return speechOutput;
+}
+
 function urlBuilder (keyword, date, location) {
   // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
   if(!date){
@@ -89,6 +101,20 @@ var handlers = {
           if (!error && response.statusCode == 200) {
             if (response.statusCode == 200) {
                 var speech = listEvents(JSON.parse(body), 3);
+                ref.emit(':tell', speech);
+            } else{
+                console.log(response.statusCode);
+            }
+          }
+        });
+    },
+	'GetNews': function(){
+        var url = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey=da9d35b3f1664d9bbff21181de70f6ba";
+        var ref = this;
+        request(url, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (response.statusCode == 200) {
+                var speech = listEventsNews(JSON.parse(body), 3);
                 ref.emit(':tell', speech);
             } else{
                 console.log(response.statusCode);
