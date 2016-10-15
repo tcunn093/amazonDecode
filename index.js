@@ -58,9 +58,6 @@ function urlBuilder (keyword, date, location) {
   return 'URL';
 }
 
-var url = function(key, date, loc) {
-	return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
-}
 
 function slots(context) {
   return context.event.request.intent.slots;
@@ -97,9 +94,24 @@ var handlers = {
 		date = "today";
 	}
 
-	var builtURL = url[keyword][date][location]();
-      var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
-      this.emit(':tell', speech);
+	//var builtURL = url[keyword][date][location]();
+	var builtURL = "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
+	
+	var ref = this;
+	request(builtURL, function (error, response, body) {
+	if (!error && response.statusCode == 200) {
+	if (response.statusCode == 200) {
+		var speech = listEvents(JSON.parse(body), 3);
+		ref.emit(':tell', speech);
+	} else{
+		console.log(response.statusCode);
+	}
+	}
+	});
+
+	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
+	//this.emit(':tell', speech);
+	
     },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
