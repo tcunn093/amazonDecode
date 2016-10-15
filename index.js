@@ -27,6 +27,7 @@ var request = require('request');
 
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
+var EXPLAIN = true;
 
 var states = {
 	NEWREQUEST: "_NEWREQUEST",
@@ -58,7 +59,6 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
         this.emit('NewSession'); // Uses the handler in newSessionHandlers
     },
     'GetEventsToday': function(){
-
         var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
         var ref = this;
         request(url, function (error, response, body) {
@@ -108,7 +108,11 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
         request(url, function (error, response, body) {
           if (!error && response.statusCode == 200) {
             if (response.statusCode == 200) {
-                var speech = listEventsNews(JSON.parse(body), 3);
+                var speech = "";
+                if (EXPLAIN) {
+                  speech = speech + "Get news handler called. The response is..."
+                }
+                speech = speech + listEventsNews(JSON.parse(body), 3);
                 ref.emit(':tell', speech);
             } else{
                 console.log(response.statusCode);
@@ -127,7 +131,21 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
     	request(builtURL, function (error, response, body) {
     		if (!error && response.statusCode == 200) {
     			if (response.statusCode == 200) {
-    				var speech = listEvents(JSON.parse(body), 3);
+    				var speech = "";
+            if (EXPLAIN) {
+              speech = speech + "Get events handler called"
+              if (keyword) {
+                speech = speech + " with keyword " + keyword
+              }
+              if (date) {
+                speech = speech + " with date " + date
+              }
+              if (location) {
+                speech = speech + " with location " + location
+              }
+              speech = seech + ". This is the response..."
+            }
+            speech = speech + listEvents(JSON.parse(body), 3);
     				ref.emit(':tell', speech);
     			} else{
     				console.log(response.statusCode);
@@ -151,7 +169,11 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
     	request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           if (response.statusCode == 200) {
-            var speech = listEvents(JSON.parse(body), 3);
+            var speech = "";
+            if(EXPLAIN) {
+              speech = speech + "Get events tonight handler called. This is your response ..."
+            }
+            speech = speech + listEvents(JSON.parse(body), 3);
             speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
             ref.emit(':tell', speech); // Show the HTML for the Google homepage.
           } else{
@@ -173,7 +195,11 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
       request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           if (response.statusCode == 200) {
-            var speech = listEvents(JSON.parse(body), 3);
+            var speech = "";
+            if (EXPLAIN) {
+              speech = speech + "Get events future night called with date " + date + ". The response is ..."
+            }
+            speech = speech + listEvents(JSON.parse(body), 3);
             speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
             ref.emit(':tell', speech); // Show the HTML for the Google homepage.
           } else{
@@ -217,6 +243,14 @@ function listEvents (data, count) {
 
     for (var i = 0; i < count; i++) {
       speechOutput = speechOutput + events[i]['name']['text'];
+
+      if(i!==count-1){
+        speechOutput += ", ";
+      }
+
+      if(i===count-2){
+        speechOutput += "and ";
+      }
     }
 
     speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
