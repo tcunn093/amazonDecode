@@ -48,7 +48,7 @@ var newSessionHandlers = {
      }
 };
 
-var newRequestHandlers = {
+var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
 
 	 'LaunchRequest': function(){
         this.emit('GetEventsToday');
@@ -130,17 +130,17 @@ var newRequestHandlers = {
         this.emit(':tell', "Sorry, I didn't understand what you're asking.");
     },
 
-};
+});
 
-var moreInfoHandlers = {
+var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
 	// TODO: get more info from session attributes, and send a response with that.
 
-};
+});
 
-var newsModeHandlers = {
+var newsModeHandlers = Alexa.CreateStateHandler(states.NEWSMODE, {
 	// TODO: respond with news, from news branch.
 
-};
+});
 
 function listEvents (data, count) {
     var events = data.events;
