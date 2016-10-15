@@ -49,7 +49,7 @@ var newSessionHandlers = {
 };
 
 var newRequestHandlers = {
-   
+
 	 'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
@@ -136,7 +136,7 @@ var moreInfoHandlers = {
 };
 
 var newsModeHandlers = {
-	// TODO: respond with news, from news branch.	
+	// TODO: respond with news, from news branch.
 
 };
 
@@ -172,6 +172,23 @@ function urlBuilder (keyword, date, location) {
 
 function slots(context) {
   return context.event.request.intent.slots;
+}
+
+function saveEvents (context, data, count) {
+  var newContext = context;
+  var events = data.events;
+  newContext.attributes['events'] = [];
+
+  for (var i = 0; i < Math.min(events.length, count); i++) {
+    newContext.attributes['events'].push({
+      'name': events[i]['name']['text'],
+      'description': events[i]['description']['text'],
+      'time': events[i]['start']['local']
+    });
+  }
+
+  newContext.handler.state = states.MOREINFO;
+  return newContext;
 }
 
 exports.handler = function(event, context, callback) {
