@@ -95,7 +95,9 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
     		if (!error && response.statusCode == 200) {
     			if (response.statusCode == 200) {
     				var speech = listEvents(JSON.parse(body), 3);
-    				ref.emit(':tell', speech);
+
+            ref.handler.state = states.MOREINFO;
+    				ref.emit(':ask', speech + '. Would you like to know more information about these events? If yes, then say either 1, 2 or 3. Otherwise say no.', 'Please say 1, 2 or 3 for more information or say no otherwise.');
     			} else{
     				console.log(response.statusCode);
     			}
@@ -168,8 +170,61 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
 });
 
 var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
-	// TODO: get more info from session attributes, and send a response with that.
+  'MoreInfoNumber': function () {
+    var speechOutput = '';
+    var selectedEvent;
+    var number = parseInt(slots(this).Number.value);
 
+    if (!number) {
+      this.emit('AMAZON.HelpIntent');
+      return;
+    }
+
+    selectedEvent = this.attributes['events'][number];
+    if (!selectedEvent) {
+      this.emit(':tell', 'I am having problems fetching the requested event.');
+      return;
+    }
+
+    if (selectedEvent['name']) {
+      if (selectedEvent['text']) {
+        speechOutput += 'You asked more information about '   selectedEvent['name']['text'] + '. ';
+      }
+    }
+
+    if (selectedEvent['description']) {
+      if (selectedEvent['description']['text']) {
+        speechOutput += selectedEvent['description']['text'] + '. ';
+      }
+    }
+
+    if (selectedEvent['start']) {
+      if (selectedEvent['start']['local']) {
+        speechOutput += 'The event starts at ' + selectedEvent['start']['local'] + '. ';
+      }
+    }
+
+    // sanitize speech
+    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
+    this.emit(':tell', speechOutput);
+  },
+
+  'AMAZON.HelpIntent': function () {
+    var speechOutput = "You can say 1, 2 or 3 for more information or say no.";
+    this.emit(':ask', speechOutput, speechOutput);
+  },
+
+  'AMAZON.CancelIntent': function () {
+    this.emit(':tell', 'Goodbye!');
+  },
+
+  'AMAZON.StopIntent': function () {
+    this.emit(':tell', 'Goodbye!');
+  },
+
+  'Unhandled': function () {
+    this.emit(':tell', "Sorry, I didn't understand what you're asking.");
+  }
 });
 
 var newsModeHandlers = Alexa.CreateStateHandler(states.NEWSMODE, {
