@@ -95,7 +95,7 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
                 }
                 
                 ref.handler.state = states.MOREINFO;
-                ref.emit(':tell', speech);
+                ref.emit(':ask', speech + '. Would you like to know more information about these events? If yes, then say either 1, 2 or 3. Otherwise say no.', 'Please say 1, 2 or 3 for more information or say no otherwise.');
             } else{
                 console.log(response.statusCode);
             }
@@ -144,10 +144,12 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
               if (location) {
                 speech = speech + " with location " + location
               }
-              speech = seech + ". This is the response..."
+              speech = speech + ". This is the response..."
             }
             speech = speech + listEvents(JSON.parse(body), 3);
+            console.log('SPEECH IS ' + speech + ' SETTING STATE TO "MOREINFO".');
     				ref.handler.state = states.MOREINFO;
+
             ref.emit(':ask', speech + '. Would you like to know more information about these events? If yes, then say either 1, 2 or 3. Otherwise say no.', 'Please say 1, 2 or 3 for more information or say no otherwise.');
     			} else {
     				console.log(response.statusCode);
@@ -238,8 +240,8 @@ var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
       this.emit('AMAZON.HelpIntent');
       return;
     }
-
-    selectedEvent = this.attributes['events'][number];
+    console.log(this.attributes);
+    selectedEvent = this.attributes['events'][number-1];
     if (!selectedEvent) {
       this.emit(':tell', 'I am having problems fetching the requested event.');
       return;
