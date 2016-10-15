@@ -62,7 +62,6 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
             if (response.statusCode == 200) {
                 var data = JSON.parse(body)
                 var speech = listEvents(data, 3);
-                ref = saveEvents(ref, data, 3);
                 ref.emit(':tell', speech);
             } else{
                 console.log(response.statusCode);
