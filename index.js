@@ -1,3 +1,25 @@
+/* TODO add utterances for GetEvents
+ NOTE: You have to be very careful with order and presence of the slots
+   eg. "GetEvents test two {Keyword} {Date} {Location}"
+
+   > test two dance friday Ottawa
+   keyword: dance - even though it's not on the enum list still returns because Alexa recongizes the word
+   date: 2016-10-xx
+   location: Ottawa - since we extended AMAZON.US_CITY using a custom slot type
+
+   > test two friday Ottawa
+   keyword: friday - since the order matters for the params
+   date: NULL - because Ottawa does not parse into a date
+   location: NULL - no third param
+
+   eg. test
+   > test
+   keyword: NULL
+   date: NULL
+   location: NULL
+   - this is allowed and will still call GetEvents, so we can use any combo of defined slots for an intent
+*/
+
 'use strict';
 var Alexa = require('alexa-sdk');
 
@@ -69,6 +91,7 @@ var handlers = {
     },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
+        // TODO require Dallas's code and fix this function
   //   	var tonightStartTime;
   //   	var tonightEndTime;
 
@@ -83,11 +106,12 @@ var handlers = {
 		// });
     },
 	'GetEventsFuture': function() {
+    //TODO
 		var date = this.event.request.intent.slots.Date.value;
 		this.emit(':tell', date);
 	},
 	'GetEventsByKeyword': function(intent, session, response) {
-
+    //TODO
 		this.emit(':tell', 'test');
 	},
     'AMAZON.HelpIntent': function () {
@@ -102,6 +126,7 @@ var handlers = {
         this.emit(':tell', 'Goodbye!');
     },
     'Unhandled': function() {
+        // Alexa calls this when an utterance maps to an undefined handler
         this.emit(':tell', "Sorry, I didn't understand what you're asking.");
     },
 
