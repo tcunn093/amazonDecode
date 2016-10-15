@@ -29,6 +29,9 @@
     {
       "intent": "GetEventsTonight"
     },
+	{
+      "intent": "GetNews"
+    },
     {
       "intent": "AMAZON.HelpIntent"
     },
