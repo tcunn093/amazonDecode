@@ -31,7 +31,7 @@ var SKILL_NAME = 'Ottawa Events';
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
-    alexa.registerHandlers(handlers);
+    alexa.registerHandlers(newRequestHandlers, moreInfoHandlers);
     alexa.execute();
 };
 
@@ -65,20 +65,15 @@ var states = {
 	MOREINFO: "_MOREINFO"
 };
 
-var moreInfoHandlers = {
-
-     // This will short-cut any incoming intent or launch requests and route them to this handler.
-    'NewSession': function() {
-        if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
-            //this.attriutes['endedSessionCount'] = 0;
-            //this.attributes['gamesPlayed'] = 0;
-        }
-        this.handler.state = states.MOREINFO;
-        this.emit(':ask', 'Some more info on deCODE is, I like deCODE.');
-    }
-};
-
 var newRequestHandlers = {
+      // This will short-cut any incoming intent or launch requests and route them to this handler.
+     'NewSession': function() {
+         if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
+             this.attriutes['events'] = [];
+         }
+         this.handler.state = states.NEWREQUEST;
+         this.emit(':ask', "Ask me what's happening in Ottawa?");
+     },
     'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
@@ -143,15 +138,6 @@ var newRequestHandlers = {
   //         	}
 		// });
     },
-	'GetEventsFuture': function() {
-    //TODO
-		var date = this.event.request.intent.slots.Date.value;
-		this.emit(':tell', date);
-	},
-	'GetEventsByKeyword': function(intent, session, response) {
-    //TODO
-		this.emit(':tell', 'test');
-	},
     'AMAZON.HelpIntent': function () {
 		    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
@@ -167,5 +153,10 @@ var newRequestHandlers = {
         // Alexa calls this when an utterance maps to an undefined handler
         this.emit(':tell', "Sorry, I didn't understand what you're asking.");
     },
+
+};
+
+var moreInfoHandlers = {
+
 
 };
