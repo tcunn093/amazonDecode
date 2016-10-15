@@ -42,6 +42,14 @@ function listEvents (data, count) {
 
     for (var i = 0; i < count; i++) {
       speechOutput = speechOutput + events[i]['name']['text'];
+
+      if(i!==count-1){
+        speechOutput += ", ";
+      }
+
+      if(i===count-2){
+        speechOutput += "and ";
+      }
     }
 
     speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
