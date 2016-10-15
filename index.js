@@ -51,6 +51,15 @@ function listEvents (data, count) {
 
 function urlBuilder (keyword, date, location) {
   // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
+  if(!date){
+    date = new Date();
+  }
+  if (location == null) { 
+    location = "Ottawa";
+  }
+  if(keyword == null){
+    keyword = "";
+  }
   var localDatetime = new Date(date).toISOString().slice(0, 19);
   return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
 }
@@ -83,16 +92,6 @@ var handlers = {
       var keyword = slots(this).Keyword.value;
       var date = slots(this).Date.value;
       var location = slots(this).Location.value;
-
-    	if (location  == null) { 
-    		location = "Ottawa";
-    	}
-    	if (date == null) {
-    		date = "today";
-    	}
-      if(keyword == null){
-        keyword = "";
-      }
 
     	//var builtURL = url[keyword][date][location]();
     	var builtURL = urlBuilder(keyword, date, location);
@@ -132,17 +131,17 @@ var handlers = {
           }
         }
       });
-  },
-	'GetEventsFuture': function(intent, session, callback) {
-		var date = intent.slots.Date;
-		this.emit(':tell', date);
-	},
-	'GetEventsByKeyword': function(intent, session, response) {
-    //TODO
-		this.emit(':tell', 'test');
-	},
+    },
+  	'GetEventsFuture': function(intent, session, callback) {
+  		var date = intent.slots.Date;
+  		this.emit(':tell', date);
+  	},
+  	'GetEventsByKeyword': function(intent, session, response) {
+      //TODO
+  		this.emit(':tell', 'test');
+  	},
     'AMAZON.HelpIntent': function () {
-		    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
+  	    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
