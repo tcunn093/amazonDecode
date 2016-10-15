@@ -81,10 +81,15 @@ var handlers = {
       var keyword = slots(this).Keyword.value;
       var date = slots(this).Date.value;
       var location = slots(this).Location.value;
+	
+	if (location  == null) {
+		location = "Ottawa";
+	}
+	if (date == null) {
+		date = "today";
+	}
 
-      var url = urlBuilder(keyword, date, location);
-      console.log(url);
-      //TODO implement requesting url and calling listEvents with output
+	var url = "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
 
       var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
       this.emit(':tell', speech);
