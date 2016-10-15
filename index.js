@@ -78,7 +78,7 @@ var newRequestHandlers = {
       // This will short-cut any incoming intent or launch requests and route them to this handler.
      'NewSession': function() {
          if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
-             this.attriutes['events'] = [];
+             this.attributes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
          this.emit(':ask', "Ask me what's happening in Ottawa?");
