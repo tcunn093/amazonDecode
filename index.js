@@ -13,6 +13,19 @@ exports.handler = function(event, context, callback) {
     alexa.execute();
 };
 
+function listEvents (data, count) {
+    var events = data.events;
+    var count = Math.min(count, events.length);
+    var speechOutput = 'The top ' + count + ' events are: ';
+
+    for (var i = 0; i < count; i++) {
+      speechOutput = speechOutput + events[i]['name']['text'];
+    }
+
+    console.log(speechOutput);
+    return speechOutput;
+}
+
 var handlers = {
     'LaunchRequest': function(intent, session, callback){
 		// routing based on intents
@@ -38,22 +51,28 @@ var handlers = {
         var ref = this;
         request(url, function (error, response, body) {
           if (!error && response.statusCode == 200) {
-                ref.emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
+            if (response.statusCode == 200) {
+                var speech = listEvents(JSON.parse(body), 3);
+                speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+                ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+            } else{
+                console.log(response.statusCode);
             }
+          }
         });
     },
-    'ListEvents': function (data, count) {
-        console.log(data);
-        var events = data.events;
-        var count = Math.min(count, events.length);
-        var speechOutput = 'The top ' + count + ' events are: ';
+    // 'ListEvents': function (data, count) {
+    //     var events = data.events;
+    //     var count = Math.min(count, events.length);
+    //     var speechOutput = 'The top ' + count + ' events are: ';
 
-        for (var i = 0; i < count; i++) {
-          speechOutput = speechOutput + events[i]['name']['text'];
-        }
+    //     for (var i = 0; i < count; i++) {
+    //       speechOutput = speechOutput + events[i]['name']['text'];
+    //     }
 
-        this.emit(':tell', speechOutput);
-    },
+    //     console.log(speechOutput);
+    //     this.emit(':tell', speechOutput);
+    // },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
   //   	var tonightStartTime;
