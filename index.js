@@ -30,6 +30,7 @@ var handlers = {
 		var q = intent.slots.Keyword;
 		// send http reques with d, loc, and q
 
+
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function(){
