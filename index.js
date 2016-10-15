@@ -41,7 +41,7 @@ var newSessionHandlers = {
 
      'NewSession': function() {
          if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
-             this.attriutes['events'] = [];
+             this.attributes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
          this.emit(':tell', "Ask me what's happening in Ottawa?");
@@ -128,7 +128,7 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
     'Unhandled': function() {
         // Alexa calls this when an utterance maps to an undefined handler
         this.emit(':tell', "Sorry, I didn't understand what you're asking.");
-    },
+    }
 
 });
 
@@ -196,6 +196,6 @@ function saveEvents (context, data, count) {
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
-    alexa.registerHandlers(newRequestHandlers, moreInfoHandlers);
+    alexa.registerHandlers(newRequestHandlers, newSessionHandlers, moreInfoHandlers, newsModeHandlers);
     alexa.execute();
 };
