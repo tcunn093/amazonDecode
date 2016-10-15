@@ -79,8 +79,8 @@ var dateLimitsIsoString = function(timeRangeType,inputDate) { //normalize the in
 			break;
 	}
 
-	startIsoString = startDate.toISOString();
-	endIsoString   = endDate.toISOString();
+	startIsoString = startDate.toISOString().split('.')[0] + 'Z';
+	endIsoString   = endDate.toISOString().split('.')[0] + 'Z';
 
 	return [startIsoString,endIsoString];
 }
@@ -142,3 +142,13 @@ var testMorningDateLimitsIsoString = function() {
 	currentDate.setMinutes(30);
 	alert("05:30 - " + morningDateLimitsIsoString(currentDate));
 }
+
+var buildEventsUrlFromDateRangeIsoStrings = function(startDate,endDate) {
+	return "https://www.eventbriteapi.com/v3/events/search/?" + 
+		"sort_by=best&location.address=Ottawa&location.within=10km&" +
+		"start_date.range_start=" + startDate + "&" +
+		"start_date.range_end=" + endDate + "&token=36GRUC2DWUN74WBSDFG3";
+}
+
+module.exports.buildEventsUrlFromDateRangeIsoStrings = buildEventsUrlFromDateRangeIsoStrings;
+module.exports.tonightDateLimitsIsoString = tonightDateLimitsIsoString;
