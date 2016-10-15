@@ -36,6 +36,9 @@ var states = {
 
 var newSessionHandlers = {
 	// This will short-cut any incoming intent or launch requests and route them to this handler.
+
+	//TODO:  Decide between News, or Events. Also decide which state of event stream to use below
+
      'NewSession': function() {
          if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
              this.attriutes['events'] = [];
@@ -128,7 +131,12 @@ var newRequestHandlers = {
 };
 
 var moreInfoHandlers = {
+	// TODO: get more info from session attributes, and send a response with that.
 
+};
+
+var newsModeHandlers = {
+	// TODO: respond with news, from news branch.	
 
 };
 
