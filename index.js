@@ -199,6 +199,6 @@ function saveEvents (context, data, count) {
 exports.handler = function(event, context, callback) {
     var alexa = Alexa.handler(event, context);
     alexa.APP_ID = APP_ID;
-    alexa.registerHandlers(newRequestHandlers, newSessionHandlers, moreInfoHandlers, newsModeHandlers);
+    alexa.registerHandlers(newSessionHandlers, newRequestHandlers, moreInfoHandlers, newsModeHandlers);
     alexa.execute();
 };
