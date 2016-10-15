@@ -32,6 +32,7 @@ var handlers = {
 
         this.emit('GetEventsToday');
     },
+
     'GetEventsToday': function(){
 
         var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
@@ -42,6 +43,7 @@ var handlers = {
             }
         });
     },
+
     'ListEvents': function (data, count) {
         console.log(data);
         var events = data.events;
@@ -54,6 +56,7 @@ var handlers = {
 
         this.emit(':tell', speechOutput);
     },
+
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
   //   	var tonightStartTime;
@@ -69,22 +72,27 @@ var handlers = {
   //         	}
 		// });
     },
+
 	'GetEventsFuture': function(intent, session, callback) {
 		var date = intent.slots.Date;
 		this.emit(':tell', date);
 	},
+
 	'GetEventsByKeyword': function(intent, session, response) {
 
 		this.emit(':tell', 'test');
 	},
+
     'AMAZON.HelpIntent': function () {
 		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
+
     'AMAZON.CancelIntent': function () {
         this.emit(':tell', 'Goodbye!');
     },
+    
     'AMAZON.StopIntent': function () {
         this.emit(':tell', 'Goodbye!');
     }
