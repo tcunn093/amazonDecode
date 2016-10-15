@@ -50,8 +50,9 @@ function listEvents (data, count) {
 }
 
 function urlBuilder (keyword, date, location) {
-  //TODO implement this!
-  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
+  // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
+  var localDatetime = new Date(date).toISOString().slice(0, 19);
+  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
 }
 
 
@@ -82,7 +83,7 @@ var handlers = {
       var keyword = slots(this).Keyword.value;
       var date = slots(this).Date.value;
       var location = slots(this).Location.value;
-	
+
 	if (location  == null) {
 		location = "Ottawa";
 	}
@@ -106,7 +107,7 @@ var handlers = {
 
 	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
 	//this.emit(':tell', speech);
-	
+
     },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
