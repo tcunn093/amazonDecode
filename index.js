@@ -49,10 +49,6 @@ function listEvents (data, count) {
     return speechOutput;
 }
 
-/**
- * @deprecated
- *
- */
 function urlBuilder (keyword, date, location) {
   //TODO implement this!
   return 'URL';
@@ -99,14 +95,14 @@ var handlers = {
 	
 	var ref = this;
 	request(builtURL, function (error, response, body) {
-	if (!error && response.statusCode == 200) {
-	if (response.statusCode == 200) {
-		var speech = listEvents(JSON.parse(body), 3);
-		ref.emit(':tell', speech);
-	} else{
-		console.log(response.statusCode);
-	}
-	}
+		if (!error && response.statusCode == 200) {
+			if (response.statusCode == 200) {
+				var speech = listEvents(JSON.parse(body), 3);
+				ref.emit(':tell', speech);
+			} else{
+				console.log(response.statusCode);
+			}
+		}
 	});
 
 	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
