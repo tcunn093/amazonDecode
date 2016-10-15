@@ -232,10 +232,12 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
 
 var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
   'MoreInfoNumber': function () {
+    console.log('MORE INFO');
     var speechOutput = '';
     var selectedEvent;
+    console.log(slots(this).Number.value);
     var number = parseInt(slots(this).Number.value);
-
+    console.log(number);
     if (!number) {
       this.emit('AMAZON.HelpIntent');
       return;
