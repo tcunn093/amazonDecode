@@ -138,7 +138,7 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
                 speech = speech + " with keyword " + keyword
               }
               if (date) {
-                speech = speech + " with date " + date
+                speech = speech + " with date " + dateToSpeechOutput(date)
               }
               if (location) {
                 speech = speech + " with location " + location
@@ -152,10 +152,6 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
     			}
     		}
     	});
-
-	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
-	//this.emit(':tell', speech);
-
     },
     'GetEventsTonight': function() {
       var times = tonight.tonightDateLimitsIsoString();
@@ -197,7 +193,7 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
           if (response.statusCode == 200) {
             var speech = "";
             if (EXPLAIN) {
-              speech = speech + "Get events future night called with date " + date + ". The response is ..."
+              speech = speech + "Get events future night called with date " + dateToSpeechOutput(date) + ". The response is ..."
             }
             speech = speech + listEvents(JSON.parse(body), 3);
             speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
@@ -308,6 +304,10 @@ function listEventsNews (data, count) {
     speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
     console.log(speechOutput);
     return speechOutput;
+}
+
+function dateToSpeechOutput (date) {
+  return new Date(date).toDateString()
 }
 
 exports.handler = function(event, context, callback) {
