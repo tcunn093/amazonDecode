@@ -51,8 +51,9 @@ function listEvents (data, count) {
 
 function urlBuilder (keyword, date, location) {
   //TODO implement this!
-  return 'URL';
+  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
 }
+
 
 function slots(context) {
   return context.event.request.intent.slots;
@@ -81,13 +82,31 @@ var handlers = {
       var keyword = slots(this).Keyword.value;
       var date = slots(this).Date.value;
       var location = slots(this).Location.value;
+	
+	if (location  == null) {
+		location = "Ottawa";
+	}
+	if (date == null) {
+		date = "today";
+	}
 
-      var url = urlBuilder(keyword, date, location);
-      console.log(url);
-      //TODO implement requesting url and calling listEvents with output
+	//var builtURL = url[keyword][date][location]();
+	var builtURL = urlBuilder(keyword, date, location);
+	var ref = this;
+	request(builtURL, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			if (response.statusCode == 200) {
+				var speech = listEvents(JSON.parse(body), 3);
+				ref.emit(':tell', speech);
+			} else{
+				console.log(response.statusCode);
+			}
+		}
+	});
 
-      var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
-      this.emit(':tell', speech);
+	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
+	//this.emit(':tell', speech);
+	
     },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
