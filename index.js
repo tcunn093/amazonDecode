@@ -192,6 +192,9 @@ var handlers = {
   		var date = intent.slots.Date;
   		this.emit(':tell', date);
   	},
+    'Intro': function(intent, session, callback){
+        this.emit(:tell, "I am Echo");
+    }
   	'GetEventsByKeyword': function(intent, session, response) {
       //TODO
   		this.emit(':tell', 'test');
