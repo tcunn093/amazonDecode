@@ -27,6 +27,15 @@ function listEvents (data, count) {
     return speechOutput;
 }
 
+function urlBuilder (keyword, date, location) {
+  //TODO implement this!
+  return 'URL';
+}
+
+function slots(context) {
+  return context.event.request.intent.slots;
+}
+
 var handlers = {
     'LaunchRequest': function(){
         this.emit('GetEventsToday');
@@ -46,18 +55,18 @@ var handlers = {
           }
         });
     },
-    // 'ListEvents': function (data, count) {
-    //     var events = data.events;
-    //     var count = Math.min(count, events.length);
-    //     var speechOutput = 'The top ' + count + ' events are: ';
+    'GetEvents': function(){
+      var keyword = slots(this).Keyword.value;
+      var date = slots(this).Date.value;
+      var location = slots(this).Location.value;
 
-    //     for (var i = 0; i < count; i++) {
-    //       speechOutput = speechOutput + events[i]['name']['text'];
-    //     }
+      var url = urlBuilder(keyword, date, location);
+      console.log(url);
+      //TODO implement requesting url and calling listEvents with output
 
-    //     console.log(speechOutput);
-    //     this.emit(':tell', speechOutput);
-    // },
+      var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
+      this.emit(':tell', speech);
+    },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
   //   	var tonightStartTime;
@@ -82,7 +91,7 @@ var handlers = {
 		this.emit(':tell', 'test');
 	},
     'AMAZON.HelpIntent': function () {
-		var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
+		    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
         var reprompt = "What can I help you with?";
         this.emit(':ask', speechOutput, reprompt);
     },
@@ -91,6 +100,9 @@ var handlers = {
     },
     'AMAZON.StopIntent': function () {
         this.emit(':tell', 'Goodbye!');
-    }
+    },
+    'Unhandled': function() {
+        this.emit(':tell', "Sorry, I didn't understand what you're asking.");
+    },
 
 };
