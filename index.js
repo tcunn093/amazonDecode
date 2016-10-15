@@ -204,7 +204,7 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
         }
       });
     },
-    'Intro': function(intent, session, callback){
+    'Intro': function(){
         this.emit(:tell, "I am Echo");
     }
     'AMAZON.HelpIntent': function () {
