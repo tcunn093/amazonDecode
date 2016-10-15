@@ -44,7 +44,10 @@ var newSessionHandlers = {
              this.attriutes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
-         this.emit(':tell', "Ask me what's happening in Ottawa?");
+         this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.");
+     },
+     'LaunchRequest': function () {
+       this.emit('NewSession')
      }
 };
 
