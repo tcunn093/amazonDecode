@@ -142,3 +142,13 @@ var testMorningDateLimitsIsoString = function() {
 	currentDate.setMinutes(30);
 	alert("05:30 - " + morningDateLimitsIsoString(currentDate));
 }
+
+var buildEventsUrlFromDateRangeIsoStrings = function(startDate,endDate) {
+	return "https://www.eventbriteapi.com/v3/events/search/?" + 
+		"sort_by=best&location.address=Ottawa&location.within=10km&" +
+		"start_date.range_start=" + startDate + "&" +
+		"start_date.range_end=" + endDate;
+}
+
+module.exports.buildEventsUrlFromDateRangeIsoStrings = buildEventsUrlFromDateRangeIsoStrings;
+module.exports.tonightDateLimitsIsoString = tonightDateLimitsIsoString;
