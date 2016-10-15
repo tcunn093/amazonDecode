@@ -152,3 +152,5 @@ var buildEventsUrlFromDateRangeIsoStrings = function(startDate,endDate) {
 
 module.exports.buildEventsUrlFromDateRangeIsoStrings = buildEventsUrlFromDateRangeIsoStrings;
 module.exports.tonightDateLimitsIsoString = tonightDateLimitsIsoString;
+
+module.exports.futureNightDateLimitsIsoString = futureNightDateLimitsIsoString;

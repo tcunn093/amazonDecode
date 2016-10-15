@@ -1,0 +1,45 @@
+{
+  "intents": [
+    { "intent": "GetEvents",
+     "slots": [
+        {
+          "name":"Date", 
+          "type": "AMAZON.DATE"
+        },        {
+          "name":"Location",
+          "type": "AMAZON.US_CITY"
+        },        {
+          "name":"Keyword", 
+          "type": "KEYWORD"
+        }
+      ]
+    },
+    {
+      "intent": "GetEventsToday"
+    },
+    {
+      "intent": "GetEventsFuture",
+      "slots": [
+        {
+          "name":"Date", 
+          "type": "AMAZON.DATE"
+        }
+      ]
+    },
+    {
+      "intent": "GetEventsTonight"
+    },
+	{
+      "intent": "GetNews"
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
