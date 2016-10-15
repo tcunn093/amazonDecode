@@ -12,10 +12,15 @@ Example_Explanation:
 
 Ask_deCODE:
 	- What's happening tonight?
+		- Echo, Ask Decode, Whats happening tonight?
 	- What's happening in Toronto on October 21st?
+		- Echo, Ask Decode, Whats happening in Toroonto on October 21st?
 	- What's happening today?
+		- Echo, Ask Decode, Whats happening today?
 	- What's happening wednesday night?
+		- Echom Ask Decode, Whats happening wednesday night?
 	- What's in the news?
+		- Echo, Ask Decode, What's in the news?
 
 Reflections:
 	- Sessions are used for keeping track of information in a conversation.
