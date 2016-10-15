@@ -73,6 +73,20 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
           }
         });
     },
+	'GetNews': function(){
+        var url = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey=da9d35b3f1664d9bbff21181de70f6ba";
+        var ref = this;
+        request(url, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (response.statusCode == 200) {
+                var speech = listEventsNews(JSON.parse(body), 3);
+                ref.emit(':tell', speech);
+            } else{
+                console.log(response.statusCode);
+            }
+          }
+        });
+    },
     'GetEvents': function(){
       var keyword = slots(this).Keyword.value;
       var date = slots(this).Date.value;
@@ -106,6 +120,28 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
       var ref = this;
 
     	request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          if (response.statusCode == 200) {
+            var speech = listEvents(JSON.parse(body), 3);
+            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+          } else{
+            console.log(response.statusCode);
+          }
+        }
+      });
+    },
+    'GetEventsFutureNight' : function(intent,session,callback) {
+      var date  = new Date(slots(this).Date.value);
+      var times = tonight.futureNightDateLimitsIsoString(date);
+
+      var nightStartTime = times[0];
+      var nightEndTime   = times[1];
+
+      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(nightStartTime,nightEndTime);
+      var ref = this;
+
+      request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
           if (response.statusCode == 200) {
             var speech = listEvents(JSON.parse(body), 3);
@@ -175,7 +211,6 @@ function urlBuilder (keyword, date, location) {
   return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
 }
 
-
 function slots(context) {
   return context.event.request.intent.slots;
 }
@@ -195,6 +230,18 @@ function saveEvents (context, data, count) {
 
   newContext.handler.state = states.MOREINFO;
   return newContext;
+}
+
+function listEventsNews (data, count) {
+    var speechOutput = 'The top ' + count + ' news headlines are: ';
+
+	speechOutput = speechOutput + data.articles[0].title + ', ';
+	speechOutput = speechOutput + data.articles[1].title + ' and ';
+	speechOutput = speechOutput + data.articles[2].title;
+
+    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
+    console.log(speechOutput);
+    return speechOutput;
 }
 
 exports.handler = function(event, context, callback) {

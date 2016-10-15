@@ -1,0 +1,38 @@
+GetEventsToday What's happening today
+GetEventsToday What's happening later today
+GetEventsToday What's going on today
+GetEventsToday What's going on later today
+GetEventsToday What's happening
+GetEventsToday What's going on
+GetEventsToday Today's Events
+GetEventsToday Upcoming events
+GetEventsToday Upcoming events for today
+GetEventsToday Give me something to do today
+
+GetEvents test
+GetEvents test two {Location} {Date} {Keyword} 
+GetEvents What's happening at {Location} on {Date} about {Keyword}
+GetEvents What's happening in {Location} on {Date} about {Keyword}
+GetEvents What's happening in {Location} about {Keyword}
+GetEvents What's happening at {Location} about {Keyword}
+GetEvents What's happening at {Location}
+GetEvents What's happening in {Location}
+GetEvents What's happening about {Keyword}
+
+GetNews What's in the news
+GetNews What's are the top news
+GetNews What's are the top headlines
+
+GetEventsTonight What's happening tonight
+GetEventsTonight What's happening later tonight
+GetEventsTonight What's going on tonight
+GetEventsTonight What's going on later tonight
+GetEventsTonight Upcoming events for tonight
+GetEventsTonight Give me something to do tonight
+GetEventsTonight I'm bored
+
+GetEventsFutureNight What's happening {Date} night
+GetEventsFutureNight What's going on {Date} night
+
+GetEventsFuture What's happening on {Date}
+GetEventsFuture Date {Date}
