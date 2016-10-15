@@ -28,47 +28,6 @@ var request = require('request');
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
 
-exports.handler = function(event, context, callback) {
-    var alexa = Alexa.handler(event, context);
-    alexa.APP_ID = APP_ID;
-    alexa.registerHandlers(newRequestHandlers, moreInfoHandlers);
-    alexa.execute();
-};
-
-function listEvents (data, count) {
-    var events = data.events;
-    var count = Math.min(count, events.length);
-    var speechOutput = 'The top ' + count + ' events are: ';
-
-    for (var i = 0; i < count; i++) {
-      speechOutput = speechOutput + events[i]['name']['text'];
-    }
-
-    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
-    console.log(speechOutput);
-    return speechOutput;
-}
-
-function urlBuilder (keyword, date, location) {
-  // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
-  if(!date){
-    date = new Date();
-  }
-  if (location == null) {
-    location = "Ottawa";
-  }
-  if(keyword == null){
-    keyword = "";
-  }
-  var localDatetime = new Date(date).toISOString().slice(0, 19);
-  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
-}
-
-
-function slots(context) {
-  return context.event.request.intent.slots;
-}
-
 var states = {
 	NEWREQUEST: "_NEWREQUEST",
 	MOREINFO: "_MOREINFO"
@@ -166,4 +125,45 @@ var newRequestHandlers = {
 var moreInfoHandlers = {
 
 
+};
+
+function listEvents (data, count) {
+    var events = data.events;
+    var count = Math.min(count, events.length);
+    var speechOutput = 'The top ' + count + ' events are: ';
+
+    for (var i = 0; i < count; i++) {
+      speechOutput = speechOutput + events[i]['name']['text'];
+    }
+
+    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
+    console.log(speechOutput);
+    return speechOutput;
+}
+
+function urlBuilder (keyword, date, location) {
+  // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
+  if(!date){
+    date = new Date();
+  }
+  if (location == null) {
+    location = "Ottawa";
+  }
+  if(keyword == null){
+    keyword = "";
+  }
+  var localDatetime = new Date(date).toISOString().slice(0, 19);
+  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
+}
+
+
+function slots(context) {
+  return context.event.request.intent.slots;
+}
+
+exports.handler = function(event, context, callback) {
+    var alexa = Alexa.handler(event, context);
+    alexa.APP_ID = APP_ID;
+    alexa.registerHandlers(newRequestHandlers, moreInfoHandlers);
+    alexa.execute();
 };
