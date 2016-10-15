@@ -30,19 +30,24 @@ var SKILL_NAME = 'Ottawa Events';
 
 var states = {
 	NEWREQUEST: "_NEWREQUEST",
-	MOREINFO: "_MOREINFO"
+	MOREINFO: "_MOREINFO",
+	NEWSMODE: "_NEWSMODE"
 };
 
-var newRequestHandlers = {
-      // This will short-cut any incoming intent or launch requests and route them to this handler.
+var newSessionHandlers = {
+	// This will short-cut any incoming intent or launch requests and route them to this handler.
      'NewSession': function() {
          if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
              this.attriutes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
          this.emit(':ask', "Ask me what's happening in Ottawa?");
-     },
-    'LaunchRequest': function(){
+     }
+};
+
+var newRequestHandlers = {
+   
+	 'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function(){
