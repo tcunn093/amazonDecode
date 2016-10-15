@@ -14,22 +14,7 @@ exports.handler = function(event, context, callback) {
 };
 
 var handlers = {
-    'LaunchRequest': function(intent, session, callback){
-		// routing based on intents
-		// change the LaunchRequest header to be (intent, session, callback) => {}
-		var d = intent.slots.Date;
-		if (d == null) {
-			d = new Date().toISOString();
-		}
-
-		var loc = intent.slots.Location;
-		if (loc == null) {
-			loc = "Ottawa";
-		}
-
-		var q = intent.slots.Keyword;
-		// send http reques with d, loc, and q
-
+    'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function(){
