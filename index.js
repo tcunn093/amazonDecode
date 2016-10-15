@@ -44,7 +44,7 @@ var newSessionHandlers = {
              this.attriutes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
-         this.emit(':ask', "Ask me what's happening in Ottawa?");
+         this.emit(':tell', "Ask me what's happening in Ottawa?");
      }
 };
 
@@ -60,7 +60,9 @@ var newRequestHandlers = {
         request(url, function (error, response, body) {
           if (!error && response.statusCode == 200) {
             if (response.statusCode == 200) {
-                var speech = listEvents(JSON.parse(body), 3);
+                var data = JSON.parse(body)
+                var speech = listEvents(data, 3);
+                ref = saveEvents(ref, data, 3);
                 ref.emit(':tell', speech);
             } else{
                 console.log(response.statusCode);
