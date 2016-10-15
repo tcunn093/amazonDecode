@@ -214,7 +214,7 @@ var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
 
     if (selectedEvent['name']) {
       if (selectedEvent['text']) {
-        speechOutput += 'You asked more information about '   selectedEvent['name']['text'] + '. ';
+        speechOutput += 'You asked more information about ' + selectedEvent['name']['text'] + '. ';
       }
     }
 
