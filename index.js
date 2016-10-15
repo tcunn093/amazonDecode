@@ -49,6 +49,10 @@ function listEvents (data, count) {
     return speechOutput;
 }
 
+/**
+ * @deprecated
+ *
+ */
 function urlBuilder (keyword, date, location) {
   //TODO implement this!
   return 'URL';
