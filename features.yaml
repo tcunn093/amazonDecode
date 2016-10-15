@@ -1,9 +1,21 @@
 %YAML 1.2
 ---
 
+Points:
+	- Echo uses Alexa Voice Services to serve requests
+	- Uses sessions to keep track of information in a conversation.
+	- In our case, we had trouble near the end saving them properly, but ideally, they we would be able to ask more info on them later in the conversation.
+	- We serve information to the user from EventBrite, and NewsAPI.org
+
+Example_Explanation:
+	- We can search for events from EventBrite using Location, Date, and Keyword, and any permutation of those provided.
+	- We can search for news headlines from NewsAPI.org
+	- We say "Ask deCODE" as a trigger because it has multiple functions	
+
 Ask_deCODE:
 	- What's happening tonight?
 	- What's happening in Toronto on October 21st?
 	- What's happening today?
 	- What's happening wednesday night?
 	- What's in the news?
+
