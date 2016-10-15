@@ -21,8 +21,8 @@
 */
 
 'use strict';
-var Alexa = require('alexa-sdk');
-
+var Alexa   = require('alexa-sdk');
+var tonight = require('./tonightAndMorning');
 var request = require('request');
 
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
@@ -113,24 +113,28 @@ var handlers = {
 
     },
     'GetEventsTonight': function() {
-        this.emit(':tell', "Party time!");
-        // TODO require Dallas's code and fix this function
-  //   	var tonightStartTime;
-  //   	var tonightEndTime;
+      var times = tonight.tonightDateLimitsIsoString();
+      
+      var tonightStartTime = times[0];
+      var tonightEndTime   = times[1];    
+        
+      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
+      var ref = this;
 
-  //       [tonightStartTime,tonightEndTime] = tonightDateLimitsIsoString();
-
-  //       var url = buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
-
-		// request(url, function (error, response, body)) {
-		// 	if (!error && response.statusCode == 200) {
-  //               emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
-  //         	}
-		// });
-    },
-	'GetEventsFuture': function() {
-    //TODO
-		var date = this.event.request.intent.slots.Date.value;
+    	request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          if (response.statusCode == 200) {
+            var speech = listEvents(JSON.parse(body), 3);
+            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+          } else{
+            console.log(response.statusCode);
+          }
+        }
+      });
+  },
+	'GetEventsFuture': function(intent, session, callback) {
+		var date = intent.slots.Date;
 		this.emit(':tell', date);
 	},
 	'GetEventsByKeyword': function(intent, session, response) {
