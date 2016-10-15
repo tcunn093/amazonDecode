@@ -27,13 +27,217 @@ var request = require('request');
 
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
+var EXPLAIN = true;
 
-exports.handler = function(event, context, callback) {
-    var alexa = Alexa.handler(event, context);
-    alexa.APP_ID = APP_ID;
-    alexa.registerHandlers(handlers);
-    alexa.execute();
+var states = {
+	NEWREQUEST: "_NEWREQUEST",
+	MOREINFO: "_MOREINFO",
+	NEWSMODE: "_NEWSMODE"
 };
+
+var newSessionHandlers = {
+	// This will short-cut any incoming intent or launch requests and route them to this handler.
+
+	//TODO:  Decide between News, or Events. Also decide which state of event stream to use below
+
+     'NewSession': function() {
+         if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
+             this.attributes['events'] = [];
+         }
+         this.handler.state = states.NEWREQUEST;
+         this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.", "Ask me what's happening");
+     }
+};
+
+var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
+
+	 'LaunchRequest': function(){
+        //this.emit('GetEventsToday');
+    },
+    'NewSession': function () {
+        console.log('newsession in req hand');
+        this.emit('NewSession'); // Uses the handler in newSessionHandlers
+    },
+    'GetEventsToday': function(){
+        var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
+        var ref = this;
+        request(url, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (response.statusCode == 200) {
+                var data = JSON.parse(body)
+                var speech = listEvents(data, 3);
+                var events = data.events;
+                console.log(ref.attributes[events])
+
+                for (var i = 0; i < Math.min(events.length, 3); i++) {
+                  var name = events[i]['name'];
+                  //var description = events[i]['description'];
+                  var time = events[i]['start'];
+
+                  var event = {
+                    'name': "",//events[i]['name']['text'],
+                    //'description': "",//events[i]['description'] ? events[i]['description']['text'] : "No description available.",
+                    'time': ""//events[i]['start']['local'] ? events[i]['start']['local']: ""
+                  }
+
+                  if(name){
+                    event.name = name['text'];
+                  }
+/*
+                  if(description){
+                    event.description = description['text'];
+                  }
+*/
+                  if(time){
+                    event.time = time['local'];
+                  }
+                  ref.attributes['events'].push(event);
+                }
+
+                ref.handler.state = states.MOREINFO;
+                ref.emit(':tell', speech);
+            } else{
+                console.log(response.statusCode);
+            }
+          }
+        });
+    },
+	'GetNews': function(){
+        var url = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey=da9d35b3f1664d9bbff21181de70f6ba";
+        var ref = this;
+        request(url, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (response.statusCode == 200) {
+                var speech = "";
+                if (EXPLAIN) {
+                  speech = speech + "Get news handler called. The response is..."
+                }
+                speech = speech + listEventsNews(JSON.parse(body), 3);
+                ref.emit(':tell', speech);
+            } else{
+                console.log(response.statusCode);
+            }
+          }
+        });
+    },
+    'GetEvents': function(){
+      var keyword = slots(this).Keyword.value;
+      var date = slots(this).Date.value;
+      var location = slots(this).Location.value;
+
+    	//var builtURL = url[keyword][date][location]();
+    	var builtURL = urlBuilder(keyword, date, location);
+    	var ref = this;
+    	request(builtURL, function (error, response, body) {
+    		if (!error && response.statusCode == 200) {
+    			if (response.statusCode == 200) {
+    				var speech = "";
+            if (EXPLAIN) {
+              speech = speech + "Get events handler called"
+              if (keyword) {
+                speech = speech + " with keyword " + keyword
+              }
+              if (date) {
+                speech = speech + " with date " + date
+              }
+              if (location) {
+                speech = speech + " with location " + location
+              }
+              speech = seech + ". This is the response..."
+            }
+            speech = speech + listEvents(JSON.parse(body), 3);
+    				ref.emit(':tell', speech);
+    			} else{
+    				console.log(response.statusCode);
+    			}
+    		}
+    	});
+
+	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
+	//this.emit(':tell', speech);
+
+    },
+    'GetEventsTonight': function() {
+      var times = tonight.tonightDateLimitsIsoString();
+
+      var tonightStartTime = times[0];
+      var tonightEndTime   = times[1];
+
+      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
+      var ref = this;
+
+    	request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          if (response.statusCode == 200) {
+            var speech = "";
+            if(EXPLAIN) {
+              speech = speech + "Get events tonight handler called. This is your response ..."
+            }
+            speech = speech + listEvents(JSON.parse(body), 3);
+            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+          } else{
+            console.log(response.statusCode);
+          }
+        }
+      });
+    },
+    'GetEventsFutureNight' : function(intent,session,callback) {
+      var date  = new Date(slots(this).Date.value);
+      var times = tonight.futureNightDateLimitsIsoString(date);
+
+      var nightStartTime = times[0];
+      var nightEndTime   = times[1];
+
+      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(nightStartTime,nightEndTime);
+      var ref = this;
+
+      request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          if (response.statusCode == 200) {
+            var speech = "";
+            if (EXPLAIN) {
+              speech = speech + "Get events future night called with date " + date + ". The response is ..."
+            }
+            speech = speech + listEvents(JSON.parse(body), 3);
+            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+          } else{
+            console.log(response.statusCode);
+          }
+        }
+      });
+    },
+    'Intro': function(intent, session, callback){
+        this.emit(:tell, "I am Echo");
+    }
+    'AMAZON.HelpIntent': function () {
+  	    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
+        var reprompt = "What can I help you with?";
+        this.emit(':ask', speechOutput, reprompt);
+    },
+    'AMAZON.CancelIntent': function () {
+        this.emit(':tell', 'Goodbye!');
+    },
+    'AMAZON.StopIntent': function () {
+        this.emit(':tell', 'Goodbye!');
+    },
+    'Unhandled': function() {
+        // Alexa calls this when an utterance maps to an undefined handler
+        this.emit(':tell', "Sorry, I didn't understand what you're asking.");
+    }
+
+});
+
+var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
+	// TODO: get more info from session attributes, and send a response with that.
+
+});
+
+var newsModeHandlers = Alexa.CreateStateHandler(states.NEWSMODE, {
+	// TODO: respond with news, from news branch.
+
+});
 
 function listEvents (data, count) {
     var events = data.events;
@@ -57,24 +261,13 @@ function listEvents (data, count) {
     return speechOutput;
 }
 
-function listEventsNews (data, count) {
-    var speechOutput = 'The top ' + count + ' news headlines are: ';
-	
-	speechOutput = speechOutput + data.articles[0].title + ', ';
-	speechOutput = speechOutput + data.articles[1].title + ' and ';
-	speechOutput = speechOutput + data.articles[2].title;
-
-    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
-    console.log(speechOutput);
-    return speechOutput;
-}
-
 function urlBuilder (keyword, date, location) {
   // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
   if(!date){
     date = new Date();
   }
-  if (location == null) { 
+
+  if (location == null) {
     location = "Ottawa";
   }
   if(keyword == null){
@@ -84,135 +277,42 @@ function urlBuilder (keyword, date, location) {
   return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
 }
 
-
 function slots(context) {
   return context.event.request.intent.slots;
 }
 
-var handlers = {
-    'LaunchRequest': function(){
-        this.emit('GetEventsToday');
-    },
-    'GetEventsToday': function(){
+function saveEvents (context, data, count) {
+  var newContext = context;
+  var events = data.events;
+  //newContext.attributes['events'] = [];
 
-        var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
-        var ref = this;
-        request(url, function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            if (response.statusCode == 200) {
-                var speech = listEvents(JSON.parse(body), 3);
-                ref.emit(':tell', speech);
-            } else{
-                console.log(response.statusCode);
-            }
-          }
-        });
-    },
-	'GetNews': function(){
-        var url = "https://newsapi.org/v1/articles?source=google-news&sortBy=top&apiKey=da9d35b3f1664d9bbff21181de70f6ba";
-        var ref = this;
-        request(url, function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            if (response.statusCode == 200) {
-                var speech = listEventsNews(JSON.parse(body), 3);
-                ref.emit(':tell', speech);
-            } else{
-                console.log(response.statusCode);
-            }
-          }
-        });
-    },
-    'GetEvents': function(){
-      var keyword = slots(this).Keyword.value;
-      var date = slots(this).Date.value;
-      var location = slots(this).Location.value;
+  for (var i = 0; i < Math.min(events.length, count); i++) {
+    newContext.attributes['events'].push({
+      'name': events[i]['name']['text'],
+      'description': events[i]['description']['text'],
+      'time': events[i]['start']['local']
+    });
+  }
 
-    	//var builtURL = url[keyword][date][location]();
-    	var builtURL = urlBuilder(keyword, date, location);
-    	var ref = this;
-    	request(builtURL, function (error, response, body) {
-    		if (!error && response.statusCode == 200) {
-    			if (response.statusCode == 200) {
-    				var speech = listEvents(JSON.parse(body), 3);
-    				ref.emit(':tell', speech);
-    			} else{
-    				console.log(response.statusCode);
-    			}
-    		}
-    	});
+  newContext.handler.state = states.MOREINFO;
+  return newContext;
+}
 
-	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
-	//this.emit(':tell', speech);
+function listEventsNews (data, count) {
+    var speechOutput = 'The top ' + count + ' news headlines are: ';
 
-    },
-    'GetEventsTonight': function() {
-      var times = tonight.tonightDateLimitsIsoString();
-      
-      var tonightStartTime = times[0];
-      var tonightEndTime   = times[1];    
-        
-      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
-      var ref = this;
+	speechOutput = speechOutput + data.articles[0].title + ', ';
+	speechOutput = speechOutput + data.articles[1].title + ' and ';
+	speechOutput = speechOutput + data.articles[2].title;
 
-    	request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          if (response.statusCode == 200) {
-            var speech = listEvents(JSON.parse(body), 3);
-            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
-            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
-          } else{
-            console.log(response.statusCode);
-          }
-        }
-      });
-    },
-    'GetEventsFutureNight' : function(intent,session,callback) {
-      var date  = new Date(slots(this).Date.value);
-      var times = tonight.futureNightDateLimitsIsoString(date);
-      
-      var nightStartTime = times[0];
-      var nightEndTime   = times[1];
-        
-      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(nightStartTime,nightEndTime);
-      var ref = this;
+    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
+    console.log(speechOutput);
+    return speechOutput;
+}
 
-      request(url, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
-          if (response.statusCode == 200) {
-            var speech = listEvents(JSON.parse(body), 3);
-            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
-            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
-          } else{
-            console.log(response.statusCode);
-          }
-        }
-      });
-    },
-  	'GetEventsFuture': function(intent, session, callback) {
-  		var date = intent.slots.Date;
-  		this.emit(':tell', date);
-  	},
-    'Intro': function(intent, session, callback){
-        this.emit(:tell, "I am Echo");
-    }
-  	'GetEventsByKeyword': function(intent, session, response) {
-      //TODO
-  		this.emit(':tell', 'test');
-  	},
-    'AMAZON.HelpIntent': function () {
-  	    var speechOutput = "You can say what's happening today, or tonight, or you can say exit.";
-        var reprompt = "What can I help you with?";
-        this.emit(':ask', speechOutput, reprompt);
-    },
-    'AMAZON.CancelIntent': function () {
-        this.emit(':tell', 'Goodbye!');
-    },
-    'AMAZON.StopIntent': function () {
-        this.emit(':tell', 'Goodbye!');
-    },
-    'Unhandled': function() {
-        // Alexa calls this when an utterance maps to an undefined handler
-        this.emit(':tell', "Sorry, I didn't understand what you're asking.");
-    },
-
+exports.handler = function(event, context, callback) {
+    var alexa = Alexa.handler(event, context);
+    alexa.APP_ID = APP_ID;
+    alexa.registerHandlers(newSessionHandlers, newRequestHandlers, moreInfoHandlers, newsModeHandlers);
+    alexa.execute();
 };
