@@ -45,14 +45,18 @@ var newSessionHandlers = {
              this.attributes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
-         this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.");
+         this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.", "Ask me what's happening");
      }
 };
 
 var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
 
 	 'LaunchRequest': function(){
-        this.emit('GetEventsToday');
+        //this.emit('GetEventsToday');
+    },
+    'NewSession': function () {
+        console.log('newsession in req hand');
+        this.emit('NewSession'); // Uses the handler in newSessionHandlers
     },
     'GetEventsToday': function(){
         var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
@@ -62,6 +66,35 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
             if (response.statusCode == 200) {
                 var data = JSON.parse(body)
                 var speech = listEvents(data, 3);
+                var events = data.events;
+                console.log(ref.attributes[events])
+
+                for (var i = 0; i < Math.min(events.length, 3); i++) {
+                  var name = events[i]['name'];
+                  //var description = events[i]['description'];
+                  var time = events[i]['start'];
+
+                  var event = {
+                    'name': "",//events[i]['name']['text'],
+                    //'description': "",//events[i]['description'] ? events[i]['description']['text'] : "No description available.",
+                    'time': ""//events[i]['start']['local'] ? events[i]['start']['local']: ""
+                  }
+
+                  if(name){
+                    event.name = name['text'];
+                  }
+/*
+                  if(description){
+                    event.description = description['text'];
+                  }
+*/
+                  if(time){
+                    event.time = time['local'];
+                  }
+                  ref.attributes['events'].push(event); 
+                }
+                
+                ref.handler.state = states.MOREINFO;
                 ref.emit(':tell', speech);
             } else{
                 console.log(response.statusCode);
@@ -285,6 +318,7 @@ function urlBuilder (keyword, date, location) {
   if(!date){
     date = new Date();
   }
+
   if (location == null) {
     location = "Ottawa";
   }
@@ -302,7 +336,7 @@ function slots(context) {
 function saveEvents (context, data, count) {
   var newContext = context;
   var events = data.events;
-  newContext.attributes['events'] = [];
+  //newContext.attributes['events'] = [];
 
   for (var i = 0; i < Math.min(events.length, count); i++) {
     newContext.attributes['events'].push({
