@@ -77,7 +77,7 @@ var moreInfoHandlers = {
     }
 };
 
-var handlers = {
+var newRequestHandlers = {
     'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
@@ -100,7 +100,7 @@ var handlers = {
       var keyword = slots(this).Keyword.value;
       var date = slots(this).Date.value;
       var location = slots(this).Location.value;
-	
+
 	if (location  == null) {
 		location = "Ottawa";
 	}
@@ -124,7 +124,7 @@ var handlers = {
 
 	//var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
 	//this.emit(':tell', speech);
-	
+
     },
     'GetEventsTonight': function() {
         this.emit(':tell', "Party time!");
