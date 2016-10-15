@@ -73,8 +73,8 @@ var handlers = {
   //         	}
 		// });
     },
-	'GetEventsFuture': function(intent, session, callback) {
-		var date = intent.slots.Date.value;
+	'GetEventsFuture': function() {
+		var date = this.event.request.intent.slots.Date.value;
 		this.emit(':tell', date);
 	},
 	'GetEventsByKeyword': function(intent, session, response) {
