@@ -28,70 +28,29 @@ var request = require('request');
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
 var SKILL_NAME = 'Ottawa Events';
 
-exports.handler = function(event, context, callback) {
-    var alexa = Alexa.handler(event, context);
-    alexa.APP_ID = APP_ID;
-    alexa.registerHandlers(newRequestHandlers, moreInfoHandlers);
-    alexa.execute();
-};
-
-function listEvents (data, count) {
-    var events = data.events;
-    var count = Math.min(count, events.length);
-    var speechOutput = 'The top ' + count + ' events are: ';
-
-    for (var i = 0; i < count; i++) {
-      speechOutput = speechOutput + events[i]['name']['text'];
-
-      if(i!==count-1){
-        speechOutput += ", ";
-      }
-
-      if(i===count-2){
-        speechOutput += "and ";
-      }
-    }
-
-    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
-    console.log(speechOutput);
-    return speechOutput;
-}
-
-function urlBuilder (keyword, date, location) {
-  // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
-  if(!date){
-    date = new Date();
-  }
-  if (location == null) {
-    location = "Ottawa";
-  }
-  if(keyword == null){
-    keyword = "";
-  }
-  var localDatetime = new Date(date).toISOString().slice(0, 19);
-  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
-}
-
-
-function slots(context) {
-  return context.event.request.intent.slots;
-}
-
 var states = {
 	NEWREQUEST: "_NEWREQUEST",
-	MOREINFO: "_MOREINFO"
+	MOREINFO: "_MOREINFO",
+	NEWSMODE: "_NEWSMODE"
 };
 
-var newRequestHandlers = {
-      // This will short-cut any incoming intent or launch requests and route them to this handler.
+var newSessionHandlers = {
+	// This will short-cut any incoming intent or launch requests and route them to this handler.
+
+	//TODO:  Decide between News, or Events. Also decide which state of event stream to use below
+
      'NewSession': function() {
          if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
-             this.attributes['events'] = [];
+             this.attriutes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
-         this.emit(':ask', "Ask me what's happening in Ottawa?");
-     },
-    'LaunchRequest': function(){
+         this.emit(':tell', "Ask me what's happening in Ottawa?");
+     }
+};
+
+var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
+
+	 'LaunchRequest': function(){
         this.emit('GetEventsToday');
     },
     'GetEventsToday': function(){
@@ -101,7 +60,9 @@ var newRequestHandlers = {
         request(url, function (error, response, body) {
           if (!error && response.statusCode == 200) {
             if (response.statusCode == 200) {
-                var speech = listEvents(JSON.parse(body), 3);
+                var data = JSON.parse(body)
+                var speech = listEvents(data, 3);
+                ref = saveEvents(ref, data, 3);
                 ref.emit(':tell', speech);
             } else{
                 console.log(response.statusCode);
@@ -169,9 +130,72 @@ var newRequestHandlers = {
         this.emit(':tell', "Sorry, I didn't understand what you're asking.");
     },
 
-};
+});
 
-var moreInfoHandlers = {
+var moreInfoHandlers = Alexa.CreateStateHandler(states.MOREINFO, {
+	// TODO: get more info from session attributes, and send a response with that.
+
+});
+
+var newsModeHandlers = Alexa.CreateStateHandler(states.NEWSMODE, {
+	// TODO: respond with news, from news branch.
+
+});
+
+function listEvents (data, count) {
+    var events = data.events;
+    var count = Math.min(count, events.length);
+    var speechOutput = 'The top ' + count + ' events are: ';
+
+    for (var i = 0; i < count; i++) {
+      speechOutput = speechOutput + events[i]['name']['text'];
+    }
+
+    speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
+    console.log(speechOutput);
+    return speechOutput;
+}
+
+function urlBuilder (keyword, date, location) {
+  // Format as 2015-11-15T00:00:00, Alexa returns as 2015-11-15
+  if(!date){
+    date = new Date();
+  }
+  if (location == null) {
+    location = "Ottawa";
+  }
+  if(keyword == null){
+    keyword = "";
+  }
+  var localDatetime = new Date(date).toISOString().slice(0, 19);
+  return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.range_start=" + localDatetime + "&token=36GRUC2DWUN74WBSDFG3";
+}
 
 
+function slots(context) {
+  return context.event.request.intent.slots;
+}
+
+function saveEvents (context, data, count) {
+  var newContext = context;
+  var events = data.events;
+  newContext.attributes['events'] = [];
+
+  for (var i = 0; i < Math.min(events.length, count); i++) {
+    newContext.attributes['events'].push({
+      'name': events[i]['name']['text'],
+      'description': events[i]['description']['text'],
+      'time': events[i]['start']['local']
+    });
+  }
+
+  newContext.handler.state = states.MOREINFO;
+  return newContext;
+}
+
+exports.handler = function(event, context, callback) {
+    var alexa = Alexa.handler(event, context);
+    alexa.APP_ID = APP_ID;
+    alexa.registerHandlers(newRequestHandlers, moreInfoHandlers);
+    alexa.execute();
 };
