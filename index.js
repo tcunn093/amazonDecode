@@ -44,14 +44,18 @@ var newSessionHandlers = {
              this.attributes['events'] = [];
          }
          this.handler.state = states.NEWREQUEST;
-         this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.");
+         this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.", "Ask me what's happening");
      }
 };
 
 var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
 
 	 'LaunchRequest': function(){
-        this.emit('GetEventsToday');
+        //this.emit('GetEventsToday');
+    },
+    'NewSession': function () {
+        console.log('newsession in req hand');
+        this.emit('NewSession'); // Uses the handler in newSessionHandlers
     },
     'GetEventsToday': function(){
 
@@ -161,6 +165,7 @@ function urlBuilder (keyword, date, location) {
   if(!date){
     date = new Date();
   }
+
   if (location == null) {
     location = "Ottawa";
   }
