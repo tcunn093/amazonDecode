@@ -2,8 +2,16 @@
 ---
 
 Points:
-    - Echo uses Alexa Voice Services to serve requests
+    - Echo uses Alexa Voice Services to serve request in the clouds
     - We serve information to the user from EventBrite, and NewsAPI.org
+	- We used the Alexa Skills API to develop a new skill that we called deCODE
+
+What_We_Did:
+	- AVS converts speech input into text. It also has built in parsing of Dates, Locations, and Times that we used.
+		- For example, saying 'Five' will be transformed into the number 5 in the data that our skill is passed.
+	- We use sessions to keep track of the conversation, for asking complex, or multi step questions.
+		- For example, more info.
+	- We used Node.js as a runtime in the cloud
 
 Example_Explanation:
     - We can search for events from EventBrite using Location, Date, and Keyword, and any permutation of those provided.
@@ -23,5 +31,7 @@ Ask_deCODE:
         - Echo, Ask Decode, What's in the news?
 
 Reflections:
-    - Sessions are used for keeping track of information in a conversation.
-    - In our case, we had trouble near the end saving them properly, but ideally, they we would be able to ask more info on them later in the conversation.
+	- We did this without a developer for most of the time.
+	- We worked together as a team well to accomplish a task.
+	- We debugged together well.
+	- None of us really had any good Node.js experience, and we managed to make it work.
