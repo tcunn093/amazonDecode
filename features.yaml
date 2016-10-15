@@ -3,8 +3,6 @@
 
 Points:
 	- Echo uses Alexa Voice Services to serve requests
-	- Uses sessions to keep track of information in a conversation.
-	- In our case, we had trouble near the end saving them properly, but ideally, they we would be able to ask more info on them later in the conversation.
 	- We serve information to the user from EventBrite, and NewsAPI.org
 
 Example_Explanation:
@@ -19,3 +17,6 @@ Ask_deCODE:
 	- What's happening wednesday night?
 	- What's in the news?
 
+Reflections:
+	- Sessions are used for keeping track of information in a conversation.
+	- In our case, we had trouble near the end saving them properly, but ideally, they we would be able to ask more info on them later in the conversation.
