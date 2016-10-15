@@ -140,6 +140,28 @@ var handlers = {
         }
       });
     },
+    'GetEventsFutureNight' : function(intent,session,callback) {
+      var date  = new Date(slots(this).Date.value);
+      var times = tonight.futureNightDateLimitsIsoString(date);
+      
+      var nightStartTime = times[0];
+      var nightEndTime   = times[1];
+        
+      var url = tonight.buildEventsUrlFromDateRangeIsoStrings(nightStartTime,nightEndTime);
+      var ref = this;
+
+      request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          if (response.statusCode == 200) {
+            var speech = listEvents(JSON.parse(body), 3);
+            speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+            ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+          } else{
+            console.log(response.statusCode);
+          }
+        }
+      });
+    },
   	'GetEventsFuture': function(intent, session, callback) {
   		var date = intent.slots.Date;
   		this.emit(':tell', date);
