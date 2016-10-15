@@ -21,7 +21,7 @@ function listEvents (data, count) {
     for (var i = 0; i < count; i++) {
       speechOutput = speechOutput + events[i]['name']['text'];
     }
-    
+
     speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
     console.log(speechOutput);
     return speechOutput;
@@ -74,7 +74,7 @@ var handlers = {
 		// });
     },
 	'GetEventsFuture': function(intent, session, callback) {
-		var date = intent.slots.Date;
+		var date = intent.slots.Date.value;
 		this.emit(':tell', date);
 	},
 	'GetEventsByKeyword': function(intent, session, response) {
