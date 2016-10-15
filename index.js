@@ -17,7 +17,7 @@ var handlers = {
     'LaunchRequest': function(intent, session, callback){
 		// routing based on intents
 		// change the LaunchRequest header to be (intent, session, callback) => {}
-		var d = intent.slots.Data;
+		var d = intent.slots.Date;
 		if (d == null) {
 			d = new Date().toISOString();
 		}
