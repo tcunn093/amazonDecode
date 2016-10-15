@@ -28,11 +28,13 @@ var handlers = {
 		}
 
 		var q = intent.slots.Keyword;
-		// send http reques with d, loc, and q
-
-
-        this.emit('GetEventsToday');
+		// send GetEvents with specific types
+		// add d, loc, and q as params to line below, GetEvents will be added in master later
+        this.emit('GetEvents');
     },
+	'GetEvents': function(intent, session, callback) {
+		// emit based on what is passed
+	},
     'GetEventsToday': function(){
 
         var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
