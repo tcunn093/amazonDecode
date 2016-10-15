@@ -58,6 +58,10 @@ function urlBuilder (keyword, date, location) {
   return 'URL';
 }
 
+var url = function(key, date, loc) {
+	return "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
+}
+
 function slots(context) {
   return context.event.request.intent.slots;
 }
@@ -93,8 +97,7 @@ var handlers = {
 		date = "today";
 	}
 
-	var url = "https://www.eventbriteapi.com/v3/events/search/?q=" + keyword +  "&sort_by=best&location.address=" + location + "&location.within=20km&start_date.keyword=" + date + "&token=36GRUC2DWUN74WBSDFG3";
-
+	var builtURL = url[keyword][date][location]();
       var speech = 'Keyword is ' + keyword + ' and date is ' + date + ' and location is ' + location;
       this.emit(':tell', speech);
     },
