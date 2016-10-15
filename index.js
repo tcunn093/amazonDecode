@@ -45,9 +45,6 @@ var newSessionHandlers = {
          }
          this.handler.state = states.NEWREQUEST;
          this.emit(':ask', "Welcome to Decode Ottawa. Ask me what's happening.");
-     },
-     'LaunchRequest': function () {
-       this.emit('NewSession')
      }
 };
 
