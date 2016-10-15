@@ -59,6 +59,24 @@ function slots(context) {
   return context.event.request.intent.slots;
 }
 
+var states = {
+	NEWREQUEST: "_NEWREQUEST",
+	MOREINFO: "_MOREINFO"
+};
+
+var moreInfoHandlers = {
+
+     // This will short-cut any incoming intent or launch requests and route them to this handler.
+    'NewSession': function() {
+        if(Object.keys(this.attributes).length === 0) { // Check if it's the first time the skill has been invoked
+            //this.attriutes['endedSessionCount'] = 0;
+            //this.attributes['gamesPlayed'] = 0;
+        }
+        this.handler.state = states.MOREINFO;
+        this.emit(':ask', 'Some more info on deCODE is, I like deCODE.');
+    }
+};
+
 var handlers = {
     'LaunchRequest': function(){
         this.emit('GetEventsToday');
