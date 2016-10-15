@@ -1,6 +1,6 @@
-'use strict';
+
 var Alexa = require('alexa-sdk');
-var tonight = require('./tonightAndMorning')
+var tonight = require('./tonightAndMorning');
 var request = require('request');
 
 var APP_ID = 'arn:aws:lambda:us-east-1:917624185542:function:GetEventsToday';
@@ -59,19 +59,27 @@ var handlers = {
     //     this.emit(':tell', speechOutput);
     // },
     'GetEventsTonight': function() {
-    	var times = new Array();
-    	times = tonight.tonightDateLimitsIsoString();
-    
-    	var tonightStartTime = times[0];
-    	var tonightEndTime   = times[1];    
+        
+      	var times = tonight.tonightDateLimitsIsoString();
+      
+      	var tonightStartTime = times[0];
+      	var tonightEndTime   = times[1];    
         
         var url = tonight.buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
-        
-		request(url, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-                emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
-          	}
-		});
+        //var url = "https://www.eventbriteapi.com/v3/events/search/?sort_by=best&location.address=Ottawa&location.within=20km&start_date.keyword=today&token=36GRUC2DWUN74WBSDFG3";
+        var ref = this;
+    	  request(url, function (error, response, body) {
+          if (!error && response.statusCode == 200) {
+            if (response.statusCode == 200) {
+                var speech = listEvents(JSON.parse(body), 3);
+                speech = speech.replace(/[^0-9a-zA-Z ,.]/g, '');
+                ref.emit(':tell', speech); // Show the HTML for the Google homepage.
+            } else{
+                console.log(response.statusCode);
+            }
+          }
+        });
+
     },
 	'GetEventsFuture': function(intent, session, callback) {
 		var date = intent.slots.Date;
@@ -92,5 +100,4 @@ var handlers = {
     'AMAZON.StopIntent': function () {
         this.emit(':tell', 'Goodbye!');
     }
-
 };

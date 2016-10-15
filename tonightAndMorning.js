@@ -147,7 +147,7 @@ var buildEventsUrlFromDateRangeIsoStrings = function(startDate,endDate) {
 	return "https://www.eventbriteapi.com/v3/events/search/?" + 
 		"sort_by=best&location.address=Ottawa&location.within=10km&" +
 		"start_date.range_start=" + startDate + "&" +
-		"start_date.range_end=" + endDate;
+		"start_date.range_end=" + endDate + "&token=36GRUC2DWUN74WBSDFG3";
 }
 
 module.exports.buildEventsUrlFromDateRangeIsoStrings = buildEventsUrlFromDateRangeIsoStrings;
