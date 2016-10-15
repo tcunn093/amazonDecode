@@ -91,9 +91,9 @@ var newRequestHandlers = Alexa.CreateStateHandler(states.NEWREQUEST,{
                   if(time){
                     event.time = time['local'];
                   }
-                  ref.attributes['events'].push(event); 
+                  ref.attributes['events'].push(event);
                 }
-                
+
                 ref.handler.state = states.MOREINFO;
                 ref.emit(':ask', speech + '. Would you like to know more information about these events? If yes, then say either 1, 2 or 3. Otherwise say no.', 'Please say 1, 2 or 3 for more information or say no otherwise.');
             } else{
@@ -356,7 +356,7 @@ function listEventsNews (data, count) {
     var speechOutput = 'The top ' + count + ' news headlines are: ';
 
 	speechOutput = speechOutput + data.articles[0].title + ', ';
-	speechOutput = speechOutput + data.articles[1].title + ' and ';
+	speechOutput = speechOutput + data.articles[1].title + ', and ';
 	speechOutput = speechOutput + data.articles[2].title;
 
     speechOutput = speechOutput.replace(/[^0-9a-zA-Z ,.]/g, '');
