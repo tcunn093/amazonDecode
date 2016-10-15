@@ -1,6 +1,8 @@
 %YAML 1.2
 ---
 
+
+Kirin:
 Points:
     - Echo uses Alexa Voice Services to serve request in the clouds
     - We serve information to the user from EventBrite, and NewsAPI.org
@@ -13,6 +15,7 @@ What_We_Did:
 		- For example, more info.
 	- We used Node.js as a runtime in the cloud
 
+Mohsin:
 Example_Explanation:
     - We can search for events from EventBrite using Location, Date, and Keyword, and any permutation of those provided.
     - We can search for news headlines from NewsAPI.org
