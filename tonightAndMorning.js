@@ -79,8 +79,8 @@ var dateLimitsIsoString = function(timeRangeType,inputDate) { //normalize the in
 			break;
 	}
 
-	startIsoString = startDate.toISOString();
-	endIsoString   = endDate.toISOString();
+	startIsoString = startDate.toISOString().split('.')[0] + 'Z';
+	endIsoString   = endDate.toISOString().split('.')[0] + 'Z';
 
 	return [startIsoString,endIsoString];
 }
