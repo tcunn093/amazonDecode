@@ -55,18 +55,19 @@ var handlers = {
         this.emit(':tell', speechOutput);
     },
     'GetEventsTonight': function() {
-    	var tonightStartTime;
-    	var tonightEndTime;
+        this.emit(':tell', "Party time!");
+  //   	var tonightStartTime;
+  //   	var tonightEndTime;
     
-        [tonightStartTime,tonightEndTime] = tonightDateLimitsIsoString();
+  //       [tonightStartTime,tonightEndTime] = tonightDateLimitsIsoString();
         
-        var url = buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
+  //       var url = buildEventsUrlFromDateRangeIsoStrings(tonightStartTime,tonightEndTime);
         
-		request(url, function (error, response, body)) {
-			if (!error && response.statusCode == 200) {
-                emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
-          	}
-		});
+		// request(url, function (error, response, body)) {
+		// 	if (!error && response.statusCode == 200) {
+  //               emit('ListEvents', JSON.parse(body), 3); // Show the HTML for the Google homepage.
+  //         	}
+		// });
     },
 	'GetEventsFuture': function(intent, session, callback) {
 		var date = intent.slots.Date;
